@@ -1,0 +1,27 @@
+---
+- hosts: [nodes]
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+      become: yes
+    - name: start httpd
+      ansible.builtin.systemd:
+        name: httpd
+        state: started
+      become: yes
+    - name: create index.html
+      copy:
+        content: "Welcome to my web server"
+        dest: /var/www/html/index.html
+      become: yes
+    - name: open firewall port
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: no
+        state: enabled
+      become: yes
+      loop:
+        - 80/tcp
+        - 443/tcp

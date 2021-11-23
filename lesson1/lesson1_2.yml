@@ -1,0 +1,22 @@
+---
+- hosts: [nodes]
+  tasks:
+    - name: remove httpd
+      yum:
+        name: httpd
+        state: absent
+      become: yes
+    - name: delete index.html
+      ansible.builtin.file:
+        path: /var/www/html/index.html
+        state: absent
+      become: yes
+    - name: open firewall port
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: no
+        state: disabled
+      become: yes
+      loop:
+        - 80/tcp
+        - 443/tcp
