@@ -1,0 +1,27 @@
+---
+- hosts: [nodes]
+  tasks:
+    - include: passwords.yml
+    - name: create user Alice
+      ansible.builtin.user:
+        name: Alice
+        comment: alice@example.com
+        create_home: yes 
+        password: "{{ pass1 | password_hash('sha512', 'mysecretsalt') }}"
+      become: yes
+    - name: create user Bob
+      ansible.builtin.user:
+        name: Bob
+        comment: Bob@example.com
+        create_home: yes
+        password: "{{ pass2 | password_hash('sha512', 'mysecretsalt') }}"
+      become: yes
+    - name: create user Carol
+      ansible.builtin.user:
+        name: Carol
+        comment: carol@example.com
+        create_home: yes
+        password: "{{ pass3 | password_hash('sha512', 'mysecretsalt') }}"
+      become: yes
+
+     
