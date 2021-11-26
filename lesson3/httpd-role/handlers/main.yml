@@ -1,0 +1,7 @@
+---
+# handlers file for httpd-role
+- name: restart httpd
+  service:
+    name="{{ web_server_name }}"
+    state=restarted
+  become: yes

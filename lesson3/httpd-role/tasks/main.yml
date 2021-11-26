@@ -1,0 +1,37 @@
+---
+# tasks file for httpd-role
+
+- name: Install httpd
+  yum:
+    name: " {{ web_server_name  }} "
+    state: latest
+  become: yes
+  notify: restart httpd
+- name: Start httpd
+  service:
+    name: "{{ web_server_name }}"
+    state: started
+    enabled: true
+  become: yes
+  notify: restart httpd
+- name: create index.html
+  template:
+    src: index.j2
+    dest: /var/www/html/index.html
+#  copy:
+#    content: "Welcome to my web server"
+#    dest: /var/www/html/index.html
+  become: yes
+  notify: restart httpd
+  when: ansible_facts['distribution'] == "CentOS"
+- name: open firewall port
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: no
+    state: enabled
+  become: yes
+  notify: restart httpd
+  loop:
+    - 80/tcp
+    - 443/tcp
+

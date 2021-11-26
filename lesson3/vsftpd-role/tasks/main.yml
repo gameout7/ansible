@@ -1,0 +1,62 @@
+---
+# tasks file for vsftpd-role
+- name: install vsftpd
+  yum:
+    name: vsftpd
+    state: latest
+- name: start vsftpd
+  service:
+    name: vsftpd
+    state: started
+
+
+- name: open firewall ports ftp1
+  ansible.posix.firewalld:
+    port: 21/tcp
+    permanent: no
+    state: enabled
+- name: open firewall ports ftp2
+  ansible.posix.firewalld:
+    port: 20000-21000/tcp
+    state: enabled
+- name: open firewall service
+  ansible.posix.firewalld:
+    service: ftp
+    permanent: no
+    state: enabled
+
+
+- name: create vsftpd config file
+  template:
+    src: vsftpd.conf.j2
+    dest: /etc/vsftpd/vsftpd.conf
+- name: restart vsftpd service
+  service: 
+    name: vsftpd.service
+    state: restarted
+#- name: install python module 1
+#  pip:
+#    name: pip
+
+- name: install selinux
+  yum:
+    name: policycoreutils-python-utils
+    state: latest
+#- name: install python module 2
+#  pip:
+#    name: selinux
+- name: setsebool ftpd_anon_write
+  ansible.posix.seboolean:
+    name: ftpd_anon_write
+    state: yes
+    persistent: yes
+- name: setsebool allow ftpd write
+  ansible.posix.seboolean:
+    name: allow_ftpd_full_access
+    state: yes
+    persistent: yes
+- name: create folder
+  file:
+    path: /var/ftp/pub/upload
+    state: directory
+    mode: '0777' 

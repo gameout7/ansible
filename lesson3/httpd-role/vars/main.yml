@@ -1,0 +1,3 @@
+---
+# vars file for httpd-role
+web_server_name : httpd
